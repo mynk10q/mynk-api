@@ -1,0 +1,8 @@
+{
+  "name": "mynk-api",
+  "version": "1.0.0",
+  "description": "Custom API wrapper by mynk",
+  "main": "api/lookup.js",
+  "type": "module",
+  "license": "MIT"
+}
