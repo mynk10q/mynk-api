@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   const { key, type, term } = req.query;
 
-  // 🔐 Key Validation
+  // 🔐 API Key Check
   if (key !== 'apimynk') {
     return res.status(401).json({
       success: false,
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     });
   }
 
-  // 🔍 Required Inputs Check
+  // 🔍 Required Inputs
   if (!type || !term) {
     return res.status(400).json({
       success: false,
@@ -20,25 +20,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    // 👇 Upstream API
     const upstream = `https://umeshkumar-network.vercel.app/api?key=DarkTrace_Network&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
-
     const response = await fetch(upstream);
-    const text = await response.text();
+    const result = await response.json();
 
-    let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch {
-      parsed = text;
+    // ❌ Remove upstream credit if exists
+    if (result.credit) {
+      delete result.credit;
     }
 
-    return res.status(200).json({
-      success: true,
-      credit: "@mynk_mynk_mynk",
-      your_api_key: "apimynk",
-      source: "umeshkumar-network.vercel.app",
-      data: parsed
-    });
+    // ✅ Add your credit
+    result.credit = "@mynk_mynk_mynk";
+
+    return res.status(200).json(result);
 
   } catch (err) {
     return res.status(500).json({
