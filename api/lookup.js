@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   const { key, type, term } = req.query;
 
   // 🔐 API Key Check
-  if (key !== 'mynk01') {
+  if (key !== 'apimynk') {
     return res.status(401).json({
       success: false,
       message: "Invalid API Key",
@@ -20,16 +20,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 👇 Updated Upstream API
-    const upstream = `https://mynk-api-185x.vercel.app/api?key=Ravan&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
+    const upstream =
+      `https://mynk-api-185x.vercel.app/api?key=Ravan&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
 
     const response = await fetch(upstream);
-    const result = await response.json();
+    const text = await response.text(); // 👈 IMPORTANT
 
-    // ❌ Remove upstream credit if exists
-    if (result.credit) {
-      delete result.credit;
+    let result;
+    try {
+      result = JSON.parse(text); // try JSON
+    } catch {
+      return res.status(502).json({
+        success: false,
+        message: "Upstream did not return JSON",
+        upstream_preview: text.slice(0, 120), // debug help
+        credit: "@mynk_mynk_mynk"
+      });
     }
+
+    // ❌ Remove upstream credit
+    if (result.credit) delete result.credit;
 
     // ✅ Add your credit
     result.credit = "@mynk_mynk_mynk";
@@ -39,7 +49,7 @@ export default async function handler(req, res) {
   } catch (err) {
     return res.status(500).json({
       success: false,
-      message: "Upstream API error",
+      message: "Upstream API fetch failed",
       error: err.message,
       credit: "@mynk_mynk_mynk"
     });
