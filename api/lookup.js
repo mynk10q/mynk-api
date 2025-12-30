@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   try {
     // 👇 Upstream API
-    const upstream = `https://umeshkumar-network.vercel.app/api?key=DarkTrace_Network&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
+    const upstream = `https://codexvortex.vercel.app/api?key=Ravan&type=id_number&term=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
     const response = await fetch(upstream);
     const result = await response.json();
 
