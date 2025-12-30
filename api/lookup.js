@@ -1,8 +1,8 @@
 export default async function handler(req, res) {
-  const { key, term } = req.query;
+  const { key, type, term } = req.query;
 
   // 🔐 API Key Check
-  if (key !== 'apimynk') {
+  if (key !== 'mynk') {
     return res.status(401).json({
       success: false,
       message: "Invalid API Key",
@@ -10,25 +10,26 @@ export default async function handler(req, res) {
     });
   }
 
-  // 🔍 Required Input
-  if (!term) {
+  // 🔍 Required Inputs
+  if (!type || !term) {
     return res.status(400).json({
       success: false,
-      message: "term parameter required",
+      message: "type and term parameter required",
       credit: "@mynk_mynk_mynk"
     });
   }
 
   try {
-    // ✅ Fixed upstream API
-    const upstream =
-      `https://codexvortex.vercel.app/api?key=Ravan&type=id_number&term=${encodeURIComponent(term)}`;
+    // 👇 Updated Upstream API
+    const upstream = `https://mynk-api-185x.vercel.app/api?key=Ravan&type=${encodeURIComponent(type)}&term=${encodeURIComponent(term)}`;
 
     const response = await fetch(upstream);
     const result = await response.json();
 
-    // ❌ Remove upstream credit
-    if (result.credit) delete result.credit;
+    // ❌ Remove upstream credit if exists
+    if (result.credit) {
+      delete result.credit;
+    }
 
     // ✅ Add your credit
     result.credit = "@mynk_mynk_mynk";
